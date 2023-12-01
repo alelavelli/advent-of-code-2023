@@ -1,7 +1,7 @@
 use std::{fs::File, io::Read, collections::HashMap};
 
 pub fn solve() {
-    let mut file = File::open("inputs/one.txt").unwrap();
+    let mut file = File::open("inputs/day_01.txt").unwrap();
     let mut contents = String::new();
     file.read_to_string(&mut contents).unwrap();
     let lines: Vec<&str> = contents.lines().collect();
@@ -53,7 +53,7 @@ pub fn solve_p2() {
         "8",
         "9"
     ];
-    let mut file = File::open("inputs/one_pt2.txt").unwrap();
+    let mut file = File::open("inputs/day_01_pt2.txt").unwrap();
     let mut contents = String::new();
     file.read_to_string(&mut contents).unwrap();
     let mut result: Vec<i32> = Vec::new();

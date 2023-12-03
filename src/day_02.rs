@@ -1,4 +1,4 @@
-use std::{fs::File, collections::HashMap, io::Read};
+use std::{collections::HashMap, fs::File, io::Read};
 
 pub fn solve() {
     let mut file = File::open("inputs/day_02_example.txt").unwrap();
@@ -14,25 +14,39 @@ pub fn solve() {
     let mut possible_games = 0;
     for (i, game) in lines.iter().enumerate() {
         // remove game header and then get th throws
-        let throws = game.split(":").collect::<Vec<&str>>()[1].split(";").collect::<Vec<&str>>();
+        let throws = game.split(":").collect::<Vec<&str>>()[1]
+            .split(";")
+            .collect::<Vec<&str>>();
         // loop for each throw and if we found something that is not possible then we go outside the loop
         let mut possible = true;
         for throw in throws {
             for cubes in throw.split(",").collect::<Vec<&str>>() {
                 if cubes.contains("blue") {
-                    let num = cubes.replace(" ", "").trim_end_matches("blue").parse::<u32>().unwrap();
+                    let num = cubes
+                        .replace(" ", "")
+                        .trim_end_matches("blue")
+                        .parse::<u32>()
+                        .unwrap();
                     if num > *available_cubes.get("blue").unwrap() {
                         possible = false;
                         break;
                     }
                 } else if cubes.contains("green") {
-                    let num = cubes.replace(" ", "").trim_end_matches("green").parse::<u32>().unwrap();
+                    let num = cubes
+                        .replace(" ", "")
+                        .trim_end_matches("green")
+                        .parse::<u32>()
+                        .unwrap();
                     if num > *available_cubes.get("green").unwrap() {
                         possible = false;
                         break;
                     }
                 } else if cubes.contains("red") {
-                    let num = cubes.replace(" ", "").trim_end_matches("red").parse::<u32>().unwrap();
+                    let num = cubes
+                        .replace(" ", "")
+                        .trim_end_matches("red")
+                        .parse::<u32>()
+                        .unwrap();
                     if num > *available_cubes.get("red").unwrap() {
                         possible = false;
                         break;
@@ -62,24 +76,37 @@ pub fn solve_pt2() {
         let mut max_green = 0;
         let mut max_red = 0;
 
-
         // remove game header and then get th throws
-        let throws = game.split(":").collect::<Vec<&str>>()[1].split(";").collect::<Vec<&str>>();
-        
+        let throws = game.split(":").collect::<Vec<&str>>()[1]
+            .split(";")
+            .collect::<Vec<&str>>();
+
         for throw in throws {
             for cubes in throw.split(",").collect::<Vec<&str>>() {
                 if cubes.contains("blue") {
-                    let num = cubes.replace(" ", "").trim_end_matches("blue").parse::<u32>().unwrap();
+                    let num = cubes
+                        .replace(" ", "")
+                        .trim_end_matches("blue")
+                        .parse::<u32>()
+                        .unwrap();
                     if num > max_blue {
                         max_blue = num;
                     }
                 } else if cubes.contains("green") {
-                    let num = cubes.replace(" ", "").trim_end_matches("green").parse::<u32>().unwrap();
+                    let num = cubes
+                        .replace(" ", "")
+                        .trim_end_matches("green")
+                        .parse::<u32>()
+                        .unwrap();
                     if num > max_green {
                         max_green = num;
                     }
                 } else if cubes.contains("red") {
-                    let num = cubes.replace(" ", "").trim_end_matches("red").parse::<u32>().unwrap();
+                    let num = cubes
+                        .replace(" ", "")
+                        .trim_end_matches("red")
+                        .parse::<u32>()
+                        .unwrap();
                     if num > max_red {
                         max_red = num;
                     }

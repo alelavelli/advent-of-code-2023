@@ -1,11 +1,11 @@
-use std::{fs::File, io::Read, collections::HashMap};
+use std::{collections::HashMap, fs::File, io::Read};
 
 pub fn solve() {
     let mut file = File::open("inputs/day_01.txt").unwrap();
     let mut contents = String::new();
     file.read_to_string(&mut contents).unwrap();
     let lines: Vec<&str> = contents.lines().collect();
-    
+
     let mut result: Vec<i32> = Vec::new();
 
     for line in lines {
@@ -17,7 +17,6 @@ pub fn solve() {
                 }
                 pair.push(c);
             }
-            
         }
         if pair.len() == 1 {
             pair.push(pair.chars().next().unwrap());
@@ -30,39 +29,22 @@ pub fn solve() {
 
 pub fn solve_p2() {
     let text_digits = [
-        "zero",
-        "one",
-        "two",
-        "three",
-        "four",
-        "five",
-        "six",
-        "seven",
-        "eight",
-        "nine"
+        "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
     ];
-    let digits = [
-        "0",
-        "1",
-        "2",
-        "3",
-        "4",
-        "5",
-        "6",
-        "7",
-        "8",
-        "9"
-    ];
+    let digits = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
     let mut file = File::open("inputs/day_01_pt2.txt").unwrap();
     let mut contents = String::new();
     file.read_to_string(&mut contents).unwrap();
     let mut result: Vec<i32> = Vec::new();
     let lines: Vec<&str> = contents.lines().collect();
-    
+
     for line in lines {
         let mut text_indexes: Vec<usize> = Vec::new();
         let mut text_values: HashMap<usize, String> = HashMap::new();
-        println!("{:?}", line.match_indices("eight").map(|x| x.0).collect::<Vec<_>>());
+        println!(
+            "{:?}",
+            line.match_indices("eight").map(|x| x.0).collect::<Vec<_>>()
+        );
         for (i, t) in text_digits.iter().enumerate() {
             for index in line.match_indices(t).map(|x| x.0).collect::<Vec<_>>() {
                 text_indexes.push(index);
@@ -98,19 +80,19 @@ pub fn solve_p2() {
                 digit_values.insert(index, i.to_string());
             }*/
         }
-        
+
         println!("line {:?}", line);
         println!("text indexes {:?}", text_indexes);
         println!("text values {:?}", text_values);
         println!("digit indexes {:?}", digit_indexes);
         println!("digit values {:?}", digit_values);
-        
+
         if digit_indexes.len() > 0 {
-            if !min_index.is_some_and(|x| x <= digit_indexes.iter().min().unwrap())  {
+            if !min_index.is_some_and(|x| x <= digit_indexes.iter().min().unwrap()) {
                 min_index = Some(digit_indexes.iter().min().unwrap());
                 first_num = Some(digit_values.get(min_index.as_ref().unwrap()).unwrap());
             }
-            if ! max_index.is_some_and(|x| x >= digit_indexes.iter().max().unwrap())  {
+            if !max_index.is_some_and(|x| x >= digit_indexes.iter().max().unwrap()) {
                 max_index = Some(digit_indexes.iter().max().unwrap());
                 last_num = Some(digit_values.get(max_index.as_ref().unwrap()).unwrap());
             }
@@ -122,7 +104,7 @@ pub fn solve_p2() {
         println!("num {:?}", num);
         println!();
     }
-    
+
     let sum: i32 = result.iter().sum();
     println!("{:?}", sum);
 }

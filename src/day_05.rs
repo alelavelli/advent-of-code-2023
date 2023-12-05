@@ -1,12 +1,18 @@
 use std::{fs::File, io::Read, collections::HashMap};
 
 #[derive(Debug)]
+struct AlmanacEntry {
+    source_start: u32,
+    destination_start: u32,
+    range_length: u32
+}
+
+#[derive(Debug)]
 struct AlmanacMap {
-    _source_name: String,
+    source_name: String,
     destination_name: String,
-    // the key is the source id, the value is the destination
-    entries: HashMap<u32, u32>
-    //entries: HashMap<u32, AlmanacEntry>
+    // the key is the min and max source
+    entries: HashMap<(u32, u32), AlmanacEntry>
 }
 
 type Almanac = HashMap<String, AlmanacMap>;
@@ -34,7 +40,6 @@ fn parse_file() -> (Vec<u32>, Almanac) {
     
     let mut almanac: HashMap<String, AlmanacMap> = HashMap::new();
     let mut string_maps_iter = string_maps.iter();
-
     // ignore the first element beacuse it is the seed list
     string_maps_iter.next();
     for map_to_parse in string_maps_iter {
@@ -45,7 +50,7 @@ fn parse_file() -> (Vec<u32>, Almanac) {
         //println!("Found a map with source: {source} and destination: {destination}");
 
         let mut map: AlmanacMap = AlmanacMap { 
-            _source_name: String::from(source), 
+            source_name: String::from(source), 
             destination_name: String::from(destination), 
             entries: HashMap::new() 
         };
@@ -55,10 +60,13 @@ fn parse_file() -> (Vec<u32>, Almanac) {
             let destination_start = row.next().unwrap().parse::<u32>().unwrap();
             let source_start = row.next().unwrap().parse::<u32>().unwrap();
             let range_length = row.next().unwrap().parse::<u32>().unwrap();
+            let entry = AlmanacEntry {
+                source_start,
+                destination_start,
+                range_length
+            };
             //println!("Found a entry {:?}", entry);
-            for i in source_start..(source_start + range_length) {
-                map.entries.insert(i, destination_start + i - source_start);
-            }
+            map.entries.insert((source_start, source_start + range_length - 1), entry);
         }
         //println!("Built a map {:#?}", map);
         almanac.insert(String::from(source), map);
@@ -67,7 +75,15 @@ fn parse_file() -> (Vec<u32>, Almanac) {
 }
 
 fn find_destination_code(source_code: &u32, map: &AlmanacMap) -> u32 {
-    *map.entries.get(source_code).unwrap_or(source_code)
+    
+    for source_interval in map.entries.keys() {
+        if (source_code >= &source_interval.0) & (source_code <= &source_interval.1) {
+            let entry = map.entries.get(source_interval).unwrap();
+            let diff = source_code - source_interval.0;
+            return entry.destination_start + diff;
+        }
+    }
+    *source_code
 }
 
 fn find_location(seed: &u32, almanac: &Almanac) -> u32 {
@@ -84,7 +100,6 @@ fn find_location(seed: &u32, almanac: &Almanac) -> u32 {
 
 pub fn solve() {
     let (seeds, almanac) = parse_file();
-    println!("file parsing completed");
     let mut locations: Vec<u32> = Vec::new();
     for seed in seeds.iter() {
         locations.push(find_location(&seed, &almanac));
@@ -92,6 +107,5 @@ pub fn solve() {
 
     //println!("Seeds are {:?}", seeds);
     //println!("The Almanac is {:#?}", almanac);
-    println!("Locations are {:?}", locations);
     println!("Lowest location is {:?}", locations.iter().min().unwrap());
 }

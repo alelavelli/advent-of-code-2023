@@ -3,3 +3,4 @@ seeds: 1 15
 seed-to-soil map:
 50 5 3
 100 10 3
+500 15 2

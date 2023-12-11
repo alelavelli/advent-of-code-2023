@@ -124,7 +124,7 @@ pub fn solve_pt2() {
     println!("rows to expand are {:?} and cols to expad are {:?}", rows_to_expand, cols_to_expand);
     let offset = 1000000;
     let mut nodes: HashSet<(usize, usize)> = HashSet::new();
-    let mut galaxy_matrix: Array2<i32> = Array2::zeros((lines.len() + rows_to_expand.len() * (offset - 1), lines.get(0).unwrap().len() + cols_to_expand.len() * (offset - 1)));
+    //let mut galaxy_matrix: Array2<i32> = Array2::zeros((lines.len() + rows_to_expand.len() * (offset - 1), lines.get(0).unwrap().len() + cols_to_expand.len() * (offset - 1)));
     println!("galaxy matrix shape is {:?}", galaxy_matrix.shape());
     for (i, line) in lines.iter().enumerate() {
         let expanded_rows_before = rows_to_expand.iter().filter(|x| **x <= i).collect::<Vec<&usize>>().len() * (offset - 1);
@@ -134,7 +134,7 @@ pub fn solve_pt2() {
             let expanded_cols_before = cols_to_expand.iter().filter(|x| **x <= col).collect::<Vec<&usize>>().len() * (offset - 1);
             println!("Adding node from ({}, {}) to ({}, {})", i, col, i + expanded_rows_before, col + expanded_cols_before);
             nodes.insert((i + expanded_rows_before, col + expanded_cols_before));
-            galaxy_matrix[(i + expanded_rows_before, col + expanded_cols_before)] = 1;
+            //galaxy_matrix[(i + expanded_rows_before, col + expanded_cols_before)] = 1;
         }
     }
     println!("Expanded galaxy is \n{:?}", galaxy_matrix);

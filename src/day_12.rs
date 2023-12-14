@@ -20,7 +20,7 @@ fn is_valid(sequence: &Vec<(Cell, usize, usize)>, counts: &Vec<usize>) -> bool {
 }
 
 pub fn solve() {
-    let mut file = File::open("inputs/day_12.txt").unwrap();
+    let mut file = File::open("inputs/day_12_to_fix.txt").unwrap();
     let mut contents = String::new();
     file.read_to_string(&mut contents).unwrap();
     let lines: Vec<&str> = contents.lines().collect();
@@ -127,6 +127,7 @@ pub fn solve() {
                     partial_sequence.push((Cell::SEPARATOR, ug.0, ug.1));
                     free_slots -= ug.1;
                     partial_sequence.push((Cell::BROKEN, bg.0, bg.1));
+                    n_broken_to_add -= ug.1;
                     index_unkown += 1;
                     index_broken += 1;
                     // if we have an unknown after our broken, the first element must be .
@@ -158,14 +159,31 @@ pub fn solve() {
                         continue;
                     } else if ug.1 - missing_broken > 0 {
                         // in this case we add the separators
-                        partial_sequence.push((Cell::SEPARATOR, ug.0, ug.1 - missing_broken));
+                        let used_unknown = ug.1 - missing_broken;
+                        partial_sequence.push((Cell::SEPARATOR, ug.0, used_unknown));
+                        let ug = unknown_groups.get_mut(index_unkown).unwrap();
+                        ug.0 += used_unknown;
+                        ug.1 -= used_unknown;
+                        free_slots -= used_unknown;
+                        index_unkown += 1;
                     } 
-                    partial_sequence.push((Cell::BROKEN, bg.0 - missing_broken, bg.1 + missing_broken));
-                    n_broken_to_add -= missing_broken;
-                    free_slots -= missing_broken;
-                    index_unkown += 1;
-                    index_broken += 1;
-                    next_iterator = broken_count_iterator.next();
+                    // TODO: controllare che se ci sono unkown dopo il broken allora bisogna lasciare tutto unkown
+                    // esempio: ?#? non può diventare solo ##? ma può essere anche ?##
+                    if unknown_groups.get(index_unkown + 1).is_none() {
+                        partial_sequence.push((Cell::BROKEN, bg.0 - missing_broken, bg.1 + missing_broken));
+                        n_broken_to_add -= missing_broken;
+                        free_slots -= missing_broken;
+                        index_unkown += 1;
+                        index_broken += 1;
+                        next_iterator = broken_count_iterator.next();    
+                    } else {
+                        partial_sequence.push((Cell::BROKEN, bg.0, bg.1));
+                        partial_sequence.push((Cell::UNKOWN, ug.0, ug.1));
+                        partial_sequence.sort_by(|a, b| a.1.cmp(&b.1));
+                        index_unkown += 2;
+                        index_broken += 2;
+                        next_iterator = broken_count_iterator.next();
+                    }
                 }
             } else if (ug.0 > bg.0) & ((ug.0).abs_diff(bg.0 + bg.1) == 0) {
                 if bg.1 == broken_count {
@@ -205,8 +223,11 @@ pub fn solve() {
                         partial_sequence.push((Cell::BROKEN, bg.0, missing_broken + bg.1));
                         partial_sequence.push((Cell::SEPARATOR, ug.0 + missing_broken, 1));
                         if ug.1 - missing_broken - 1 > 0 {
-                            unknown_groups.push((ug.0 + 1, ug.1 - missing_broken - 1));
-                            unknown_groups.sort_by(|a, b| a.0.cmp(&b.0))
+                            let ug = unknown_groups.get_mut(index_unkown).unwrap();
+                            ug.0 += missing_broken + 1;
+                            ug.1 = ug.1 - missing_broken - 1;
+                            //unknown_groups.push((ug.0 + 1, ug.1 - missing_broken - 1));
+                            //unknown_groups.sort_by(|a, b| a.0.cmp(&b.0))
                         }
                         index_broken += 1;
                         n_broken_to_add -= missing_broken;
@@ -226,7 +247,6 @@ pub fn solve() {
                     // we put again the unknown because mutliple solution can be possible
                     partial_sequence.push((Cell::UNKOWN, ug.0, ug.1));
                     index_unkown += 1;
-                    next_iterator = broken_count_iterator.next();
                 }
             } else {
                 // ug.0 > bg.0

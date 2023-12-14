@@ -1,6 +1,6 @@
 use std::{fs::File, io::Read};
 
-use ndarray::{Array2, Array, s, Axis};
+use ndarray::{Array2, s, Axis};
 
 fn parse_to_array(block: &str) -> Array2<i32> {
     let lines = block.split('\n').collect::<Vec<&str>>();

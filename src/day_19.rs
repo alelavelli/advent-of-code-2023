@@ -3,6 +3,7 @@ use std::{fs::File, io::Read, collections::HashMap, fmt::Debug};
 
 struct Rule {
     part_name: Option<String>,
+    part_value: Option<i32>,
     condition: Box<dyn Fn(&Part) -> bool>,
     destination: String
 }
@@ -19,12 +20,13 @@ impl Rule {
         if split.len() > 1 {
             let destination = String::from(*split.get(1).unwrap());
             let rule = *split.get(0).unwrap();
-            let (part_name, condition): (String, Box<dyn Fn(&Part) -> bool>) = if rule.contains(">") {
+            let (part_name, part_value, condition): (String, i32, Box<dyn Fn(&Part) -> bool>) = if rule.contains(">") {
                 let rule_parts = rule.split(">").collect::<Vec<&str>>();
                 let part_name = String::from(*rule_parts.get(0).unwrap());
                 let part_number = rule_parts.get(1).unwrap().parse::<i32>().unwrap();
                 (
                     String::from(part_name.clone()),
+                    part_number,
                     Box::new( move |x: &Part| x.content.get(&part_name).map_or(false, |v| *v > part_number))
                 )
             } else {
@@ -33,14 +35,15 @@ impl Rule {
                 let part_number = rule_parts.get(1).unwrap().parse::<i32>().unwrap();
                 (
                     String::from(part_name.clone()),
+                    part_number,
                     Box::new(move |x: &Part| x.content.get(&part_name).map_or(false, |v| *v < part_number))
                 )
             };
-            Rule { part_name: Some(part_name), condition, destination }
+            Rule { part_name: Some(part_name), part_value: Some(part_value), condition, destination }
         } else {
             // in case of single destination rfg
             let destination = String::from(*split.get(0).unwrap());
-            Rule { part_name: None, condition: Box::new(|_: &Part| true ), destination }
+            Rule { part_name: None, part_value: None, condition: Box::new(|_: &Part| true ), destination }
         }
     }
 }

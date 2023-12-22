@@ -1,5 +1,5 @@
-use advent_of_code_2023::day_19;
+use advent_of_code_2023::day_20;
 
 fn main() {
-    day_19::solve();
+    day_20::solve_pt2();
 }
